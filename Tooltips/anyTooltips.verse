@@ -9,9 +9,12 @@ anyDescriptionTT<localizes><public>:message=
 anyDescriptorTT<localizes><public>:message=
 {"Describes the most basic parts of an object such as: Name, Description & Icon."}
     
-
 anyCostTT<localizes><public>:message=
 {"The cost for this object."}
+
+anyCurrencyIDTT<localizes><public>:message=
+{"Specifies the currency ID for this object."}
+    
 
 
     
