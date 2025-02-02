@@ -18,5 +18,8 @@ TransmitOnEntryTT<localizes><public>:message=
 TransmitOnExitTT<localizes><public>:message=
 {"The triggers that will be activated when an agent exits the zone."}
 
+BaseDependentTT<localizes><public>:message=
+{"If true, the triggers and all other Zone dependent functions will only be activated if the agent who triggered them is in the base."}
+
 
 

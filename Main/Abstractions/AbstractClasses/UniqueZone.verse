@@ -1,46 +1,73 @@
 using { /Fortnite.com/Devices }
 using { /Verse.org/Simulation }
+using{Purchaseables}
 using{Abstractions.Interfaces}
 using{Tooltips}
-purchase_zone<public>:=class<concrete>(unique_zone):
+using{Classes}
+
+
+transmitable_zone<public>:=class<concrete>(unique_zone):
 
         @editable {ToolTip:=TransmitOnEntryTT} var TransmitOnEntry : []trigger_device = array{}
         @editable {ToolTip:=TransmitOnExitTT} var TransmitOnExit : []trigger_device = array{}
 
-        OnBegin<override>()<suspends>:void={
+        Init<override>(inBase:base)<suspends>:void={
                 loop:
                         race:
                                 block:
                                         Agent := Volume.AgentEntersEvent.Await()
-                                        if. Status? then. AgentEntersEvent.Signal(Agent); OnEntry(?Agent:=Agent)
+                                        if. CheckValidity[inBase, Agent] then. AgentEntersEvent.Signal(Agent); OnEntry(inBase, Agent)
                                 block:
                                         Agent := Volume.AgentExitsEvent.Await()
-                                        if. Status? then. AgentExitsEvent.Signal(Agent); OnExit(?Agent:=Agent)
+                                        if. CheckValidity[inBase, Agent] then. AgentExitsEvent.Signal(Agent); OnExit(inBase, Agent)
                 
 
                 }
 
-        OnEntry(?Agent:agent):void=
+        CheckValidity(inBase:base, Agent:agent)<transacts><decides>:void=
+                Status?
+                Player := player[Agent]
+
+
+
+        OnEntry(inBase:base, Agent:agent):void=
                 for:
                         inTrigger:TransmitOnEntry
+                        CheckValidity[inBase, Agent]
                 do:
                         inTrigger.Trigger(Agent)
         
 
-        OnExit(?Agent:agent):void=
+        OnExit(inBase:base, Agent:agent):void=
                 for:
                         outTrigger:TransmitOnExit
+                        CheckValidity[inBase, Agent]
                 do:
                         outTrigger.Trigger(Agent)
 
 
-unique_zone<public>:=class(togglet, iBeginAsync):
+
+purchase_zone<public>:=class<concrete>(transmitable_zone):
+
+
+        @editable {ToolTip:=BaseDependentTT} var BaseDependent : logic = true
+
+        CheckValidity<override>(inBase:base, Agent:agent)<transacts><decides>:void=
+                Status?
+                Player := player[Agent]
+                not BaseDependent? or inBase.Players.Find[Player]
+
+
+
+
+
+unique_zone<public>:=class(togglet, isubBaseInitAsync):
 
             @editable {ToolTip:=PurchaseZoneTT}var Volume : volume_device = volume_device{}
 
             AgentEntersEvent:event(agent)=event(agent){}
             AgentExitsEvent:event(agent)=event(agent){}
-            OnBegin<override>()<suspends>:void={
+            Init<override>(inBase:base)<suspends>:void={
                 loop:
                         race:
                                 block:

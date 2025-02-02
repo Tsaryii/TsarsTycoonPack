@@ -1,37 +1,43 @@
 using { /Verse.org/Simulation }
 using { /Verse.org/Assets }
+using { /Fortnite.com/Devices }
 using {Tooltips}
 using {Textures}
+using{Main.Classes}
 using{Main.Abstractions.AbstractClasses}
+using{Main.Abstractions.Interfaces}
+
+base_ownable<public>:=class(isubBaseInitAsync):
+
+    var MaybeOwner<public>:?base=false
 
 
-#Describes the most basic parts of an object such as: Name, Description & Icon. 
-descriptor<public>:=class<concrete>():
+    SetOwner(inOwner:base):void=
+        set MaybeOwner=option{inOwner}
 
-    
+    GetOwner():base=
+        if:
+            Owner := MaybeOwner?
+        then:
+            Owner
+        else:
+            return base{}
 
-   @editable {ToolTip:=anyNameTT} Name : string = "My Item Name Here"
-
-   @editable_text_box {ToolTip:=anyDescriptionTT, MultiLine:=true, MaxLength:=300} Description : string = "Hello World! \nI am using Tsars Tycoon Pack"
-   
-   @editable {ToolTip:=PurchaseableIconTT}  Icon : texture = whiteplacholder
-
-#specifies anything with cost and currency ID
-cost_field<public>:=class<concrete>():
-
-    @editable {ToolTip:=anyCostTT} Cost : float = 0.0
-    @editable {ToolTip:=anyCurrencyIDTT} CostID : int = 1
-
-
-    AttemptToChargePlayer(Player:player)<transacts><decides>:void={}
+    Init<override>(inBase:base)<suspends>:void={SetOwner(inBase); return}
 
 
 #The most basic class for a purchaseable object
-purchaseable<public>:=class<concrete>():
+purchaseable<public>:=class<concrete>(base_ownable):
+
 
     @editable var Descriptor : descriptor = descriptor{}
     @editable var CurrencyCosts : cost_field = cost_field{}
     @editable var PurchaseZone : purchase_zone = purchase_zone{}
 
+    Init<override>(inBase:base)<suspends>:void=
+        (super:)Init(inBase)
+        PurchaseZone.Init(inBase); PurchaseZone.Enable()
+    
+        
 
     
