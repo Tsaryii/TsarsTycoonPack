@@ -27,11 +27,11 @@ cost_field<public>:=class<concrete>():
 
 
 #The most basic class for a purchaseable object
-purchaseable<public>:=class<concrete>(descriptor):
+purchaseable<public>:=class<concrete>():
 
-
+    @editable var Descriptor : descriptor = descriptor{}
     @editable var CurrencyCosts : cost_field = cost_field{}
-    @editable var UniqueZone : unique_zone = unique_zone{}
+    @editable var PurchaseZone : purchase_zone = purchase_zone{}
 
 
     
