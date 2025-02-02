@@ -3,8 +3,12 @@ using { /Verse.org/Simulation }
 using { /Verse.org/Random }
 using { /Fortnite.com/Characters }
 using { /UnrealEngine.com/Temporary/SpatialMath }
-using { Abstractions}
-base:=class(creative_device):
+using { Purchaseables}
+base:=class<concrete>(creative_device):
+
+    @editable_container {AllowReordering:=true}var PurchaseablesList : []purchaseable = array{}
+
+
 
 
 
