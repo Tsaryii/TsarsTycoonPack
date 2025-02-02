@@ -6,4 +6,4 @@ using { /UnrealEngine.com/Temporary/SpatialMath }
 using {Tooltips}
 TycoonMaster:=class<concrete>(creative_device):
 
-    @editable {ToolTip:=BasesTT, AllowReordering:=true} var Bases : []base = array{}
+    @editable_container {ToolTip:=BasesTT, AllowReordering:=true} var Bases : []base = array{}
