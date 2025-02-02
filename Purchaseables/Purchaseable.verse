@@ -2,6 +2,8 @@ using { /Verse.org/Simulation }
 using { /Verse.org/Assets }
 using {Tooltips}
 using {Textures}
+using{Main.Abstractions.AbstractClasses}
+
 
 #Describes the most basic parts of an object such as: Name, Description & Icon. 
 descriptor<public>:=class<concrete>():
@@ -29,7 +31,7 @@ purchaseable<public>:=class<concrete>(descriptor):
 
 
     @editable var CurrencyCosts : cost_field = cost_field{}
-
+    @editable var UniqueZone : unique_zone = unique_zone{}
 
 
     
