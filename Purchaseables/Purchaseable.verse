@@ -14,10 +14,6 @@ descriptor<public>:=class<concrete>():
    
    @editable {ToolTip:=PurchaseableIconTT, Categories:=array{descriptorCT, anyFullLength}}  Icon : texture = whiteplacholder
 
-   GetName():string=Name
-   GetDescription():string=Description
-   GetIcon():texture=Icon
-
 purchaseable<public>:=class<concrete>(descriptor):
 
     purchaseableCT<localizes><public>:message={"Describes the most basic parts of an object such as: Name, Description & Icon."}
