@@ -34,9 +34,31 @@ purchaseable<public>:=class<concrete>(base_ownable):
     @editable var CurrencyCosts : cost_field = cost_field{}
     @editable var PurchaseZone : purchase_zone = purchase_zone{}
 
+
+    PurchasedEvent : event(agent) = event(agent){}
+
+    #Initializes the purchaseable object
     Init<override>(inBase:base)<suspends>:void=
         (super:)Init(inBase)
-        PurchaseZone.Init(inBase); PurchaseZone.Enable()
+        PurchaseZone.Init(inBase); PurchaseZone.Enable(); 
+        spawn{OnBegin()}
+        sync:
+            AwaitPurchase();
+            Sleep(1.0)
+
+    #For use of the purchaseable object's children classes
+    OnBegin()<suspends>:void={}
+     
+
+    #The main loop for the purchaseable object
+    AwaitPurchase()<suspends>:void=
+        loop:
+            Agent:=PurchaseZone.AgentEntersEvent.Await(); 
+            if:
+                Player := player[Agent]
+                CurrencyCosts.AttemptToChargePlayer[Player]
+            then:
+                PurchasedEvent.Signal(Agent)
     
         
 

@@ -11,6 +11,9 @@ ClassesCategory<localizes><public>:message={"Anything Class based"}
 PurchaseablesCategory<localizes><public>:message={"Anything Purchaseable based"}
 
 
+LongPrint<public>(Message:string)<transacts>:void=
+    Print(Message, ?Duration:=5.5)
+
 var UniqueZoneDebugWM <public>:weak_map(session, logic) = map{}
 
 print_system:=class(creative_device):
@@ -22,3 +25,4 @@ print_system:=class(creative_device):
     OnBegin<override>()<suspends>:void=
         if:
             set UniqueZoneDebugWM[GetSession()]=UniqueZoneDebug
+

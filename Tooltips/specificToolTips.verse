@@ -5,7 +5,7 @@ BasesTT<localizes><public>:message=
 
 #Purchaseable Tool Tips
 PurchaseableIconTT<localizes><public>:message=
-{"The icon for this purchaseable, will be displayed in any relevant UI."}
+{"The icon for this object, will be displayed in any relevant UI."}
     
 PurchaseZoneTT<localizes><public>:message=
 {"The zone in which this purchaseable can be bought."}

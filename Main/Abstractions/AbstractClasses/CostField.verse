@@ -9,5 +9,5 @@ cost_field<public>:=class<concrete>():
     @editable {ToolTip:=anyCurrencyIDTT} CostID : int = 1
 
 
-    AttemptToChargePlayer(Player:player)<transacts><decides>:void={}
+    AttemptToChargePlayer<public>(Player:player)<transacts><decides>:void={}
 

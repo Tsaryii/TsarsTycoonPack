@@ -15,6 +15,14 @@ base<public>:=class<concrete>(creative_device):
     @editable_container {AllowReordering:=true} var PurchaseablesList : []purchaseable = array{}
 
 
+    OnBegin<override>()<suspends>:void={
+        for:
+            Purchaseable:PurchaseablesList
+        do:
+            Purchaseable.Init(Self)
+    }
+
+
 
 
 

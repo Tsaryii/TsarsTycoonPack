@@ -13,6 +13,10 @@ transmitable_zone<public>:=class<concrete>(unique_zone):
         @editable {ToolTip:=TransmitOnExitTT} var TransmitOnExit : []trigger_device = array{}
 
         Init<override>(inBase:base)<suspends>:void={
+                if:
+                        Descriptor.Name = "Unnamed Volume Device"
+                then:
+                        set Descriptor.Name = "{inBase.Name}'s Unnamed Volume Device"
                 loop:
                         race:
                                 block:
@@ -34,7 +38,7 @@ transmitable_zone<public>:=class<concrete>(unique_zone):
                 else if:
                         UniqueZoneDebugWM[GetSession()]?
                 then:
-                        if. not Status? then. Print("ERR for {Name}: PurchaseZone is disabled")
+                        if. not Status? then. LongPrint("ERR for {Descriptor.Name}: PurchaseZone is disabled")
 
 
 
@@ -70,11 +74,11 @@ purchase_zone<public>:=class<concrete>(transmitable_zone):
                 else if:
                         UniqueZoneDebugWM[GetSession()]?
                 then:
-                        if. not Status? then. Print("ERR for {Name}: PurchaseZone is disabled")
+                        if. not Status? then. LongPrint("ERR for {Descriptor.Name}: PurchaseZone is disabled")
                         if:
                                 Player := player[Agent]
                                 not inBase.Players.Find[Player] and BaseDependent?
-                        then. Print("ERR for {Name}: Player Not Found in base whilst BaseDependent is true")
+                        then. LongPrint("ERR for {Descriptor.Name}: Player Not Found in base whilst BaseDependent is true")
 
 
 
@@ -83,16 +87,16 @@ purchase_zone<public>:=class<concrete>(transmitable_zone):
 
 unique_zone<public>:=class(togglet, isubBaseInitAsync):
 
-            @editable {ToolTip:=anyNameTT} var Name : string = "Unnamed Volume Device"
+           
             @editable {ToolTip:=PurchaseZoneTT}var Volume : volume_device = volume_device{}
-
-            AgentEntersEvent:event(agent)=event(agent){}
-            AgentExitsEvent:event(agent)=event(agent){}
+            @editable {ToolTip:=anyNameTT} var Descriptor : descriptor = descriptor{Icon:=false}
+            AgentEntersEvent<public>:event(agent)=event(agent){}
+            AgentExitsEvent<public>:event(agent)=event(agent){}
             Init<override>(inBase:base)<suspends>:void={
                 if:
-                        Name = "Unnamed Volume Device"
+                        Descriptor.Name = "Unnamed Volume Device"
                 then:
-                        set Name = "{inBase.Name}'s Unnamed Volume Device"
+                        set Descriptor.Name = "{inBase.Name}'s Unnamed Volume Device"
                 loop:
                         race:
                                 block:

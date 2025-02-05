@@ -7,8 +7,9 @@ descriptor<public>:=class<concrete>():
 
     
 
-    @editable {ToolTip:=anyNameTT} Name : string = "My Item Name Here"
+    @editable {ToolTip:=anyNameTT} var Name : string = "My Item Name Here"
  
     @editable_text_box {ToolTip:=anyDescriptionTT, MultiLine:=true, MaxLength:=300} Description : string = "Hello World! \nI am using Tsars Tycoon Pack"
-    
-    @editable {ToolTip:=PurchaseableIconTT}  Icon : texture = whiteplacholder
+
+    @editable {ToolTip:=PurchaseableIconTT}  Icon : ?texture = option{whiteplacholder}
+
