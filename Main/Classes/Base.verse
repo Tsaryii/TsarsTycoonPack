@@ -16,6 +16,7 @@ base<public>:=class<concrete>(creative_device):
     #Variables
     var Players<public>:[]player=array{}
     var maybePrimaryPlayer<public>:?player=false
+    
 
 
     #Events
@@ -27,6 +28,19 @@ base<public>:=class<concrete>(creative_device):
     @editable var TestLeaveButton <public> : button_device = button_device{}
     @editable_container {AllowReordering:=true} var PurchaseablesList <public> : []purchaseable = array{}
 
+
+
+    #Debug Variables
+    var SBaseClaimDebugWM:logic=false
+    var SBaseLeaveDebugWM:logic=false
+
+    SetupDebug<internal>()<transacts>:void=
+        if. BaseClaimDebugWM[GetSession()]?
+        then. set SBaseClaimDebugWM = true
+    
+        if. BaseLeaveDebugWM[GetSession()]?     
+        then. set SBaseLeaveDebugWM = true
+            
 
     Init(inMaster:TycoonMaster):void=set maybeOwner=option{inMaster}
 
@@ -40,6 +54,10 @@ base<public>:=class<concrete>(creative_device):
         spawn{asyncAwaitBaseClaim()}
         BaseClaimer.Enable(); 
         TestLeaveButton.InteractedWithEvent.Subscribe(FakeBaseLeave)
+        SetupDebug()
+
+
+
     
     FakeBaseLeave(Agent:agent):void={
         if:
@@ -50,36 +68,38 @@ base<public>:=class<concrete>(creative_device):
     asyncAwaitBaseClaim()<suspends>:void=
         loop:
             Agent := BaseClaimer.AgentEntersEvent.Await();
-            case(Players.Length):
-                0 =>
-                    if:
-                        Player := player[Agent]
-                        Player.CanClaimBase[]
-                    then:
-                        Incorperate(Player)
-                        set maybePrimaryPlayer = option{Player}
-                _ =>
-                    if:
-                        Player := player[Agent]
-                        Player.CanClaimBase[]
-                    then:
-                        Incorperate(Player)
+            
+            if. Players.Length=0 then:
+                if:
+                    Player := player[Agent]
+                    Player.CanClaimBase[]
+                then:
+                    Incorperate(Player)
+                    set maybePrimaryPlayer = option{Player}
+                else:
+                    LongMessagePrint("Player attempted to claim {Descriptor.Name} but was denied", "ABC-001", SBaseClaimDebugWM)
+            if. Players.Length>=1 then:
+                if:
+                    Player := player[Agent]
+                    Player.CanClaimBase[]
+                then:
+                    Incorperate(Player)
+                else:
+                    LongMessagePrint("Player attempted to claim {Descriptor.Name} but was denied", "ABC-002", SBaseClaimDebugWM)
 
 
 
     Incorperate(inPlayer:player):void=
-        set Players += array{inPlayer}
-        spawn{inPlayer.asyncAwaitLeave()}
         if:
             Owner := maybeOwner?
             PlayerStats := Owner.GetStats[inPlayer]
         then:
             set PlayerStats.maybeBase = option{Self}
-
-        if:
-            BaseClaimDebugWM[GetSession()]?
-        then:
-            LongSuccessPrint("A Player has joined the: {Descriptor.Name}!", "INC-001")
+            set Players += array{inPlayer}
+            spawn{inPlayer.asyncAwaitLeave()}
+            LongSuccessPrint("A Player has joined the: {Descriptor.Name}!", "INC-001", SBaseClaimDebugWM)
+        else:
+            LongErrorPrint("Failed to fetch owner when resolving player in {Descriptor.Name}", "INC-002", SBaseClaimDebugWM)
 
 
             
@@ -99,22 +119,15 @@ base<public>:=class<concrete>(creative_device):
             then:
                 if. Players.Length = 0 then. ResetBase()
                 if. Players.Length >= 1 then. set maybePrimaryPlayer = option{Players[0]}
-                if:
-                    BaseLeaveDebugWM[GetSession()]?
-                then:
-                    LongMessagePrint("The PrimaryPlayer of {Descriptor.Name} has left", "AAL-001")
+                LongMessagePrint("The PrimaryPlayer of {Descriptor.Name} has left", "AAL-001", SBaseLeaveDebugWM)
             else:
-                if:
-                    BaseLeaveDebugWM[GetSession()]?
-                then:
-                    LongMessagePrint("A Player has left the: {Descriptor.Name}!", "AAL-002")
+                LongMessagePrint("A Player has left the: {Descriptor.Name}!", "AAL-002", SBaseLeaveDebugWM)
         else:
-            if:
-                BaseLeaveDebugWM[GetSession()]?
-            then:
-                LongMessagePrint("{Descriptor.Name} has noticed a Player has left the experience and determined the player wasn't in their players list.", "AAL-003")
+            LongMessagePrint("{Descriptor.Name} has noticed a Player has left the experience and determined the player wasn't in their players list.", "AAL-003", SBaseLeaveDebugWM)
+                
     ResetBase():void=
-        LongMessagePrint("{Descriptor.Name}'s PrimaryPlayer has left! Initiating Base Reset", "RSB-001")
+        LongMessagePrint("{Descriptor.Name}'s PrimaryPlayer has left! Initiating Base Reset", "RSB-001", SBaseLeaveDebugWM)
+            
                 
                 
     

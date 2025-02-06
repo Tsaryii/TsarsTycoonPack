@@ -14,14 +14,23 @@ BasesCategory<localizes><public>:message={"Anything Base based"}
 
 
 
-LongSuccessPrint<public>(Message:string, Code:string)<transacts>:void=
-    Print("SUCCESS: {Message} | Code: {Code}", ?Duration:=5.5, ?Color:=NamedColors.Green)
+LongSuccessPrint<public>(Message:string, Code:string, Logic:logic)<transacts>:void=
+    if:
+        Logic?
+    then:
+        Print("SUCCESS: {Message} | Code: {Code}", ?Duration:=5.5, ?Color:=NamedColors.Green)
 
-LongMessagePrint<public>(Message:string, Code:string)<transacts>:void=
-    Print("NOTICE: {Message} | Code: {Code}", ?Duration:=5.5, ?Color:=NamedColors.Yellow)
+LongMessagePrint<public>(Message:string, Code:string, Logic:logic)<transacts>:void=
+    if:
+        Logic?
+    then:
+        Print("NOTICE: {Message} | Code: {Code}", ?Duration:=5.5, ?Color:=NamedColors.Yellow)
 
-LongErrorPrint<public>(Message:string, ErrorCode:string)<transacts>:void=
-    Print("ERROR: {Message} | ErrorCode: {ErrorCode}", ?Duration:=5.5, ?Color:=NamedColors.Red)
+LongErrorPrint<public>(Message:string, ErrorCode:string, Logic:logic)<transacts>:void=
+    if:
+        Logic?
+    then:
+        Print("ERROR: {Message} | ErrorCode: {ErrorCode}", ?Duration:=5.5, ?Color:=NamedColors.Red)
 
 var UniqueZoneDebugWM <public>:weak_map(session, logic) = map{}
 var BaseClaimDebugWM <public>:weak_map(session, logic) = map{}

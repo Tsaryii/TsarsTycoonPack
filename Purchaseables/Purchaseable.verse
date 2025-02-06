@@ -40,8 +40,9 @@ purchaseable<public>:=class<concrete>(base_ownable):
     #Initializes the purchaseable object
     Init<override>(inBase:base)<suspends>:void=
         (super:)Init(inBase)
-        PurchaseZone.Init(inBase); PurchaseZone.Enable(); 
+        spawn{PurchaseZone.Init(inBase)};
         spawn{OnBegin()}
+        PurchaseZone.Enable(); 
         sync:
             asyncAwaitPurchase();
             Sleep(1.0)

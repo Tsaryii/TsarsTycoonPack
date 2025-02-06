@@ -35,10 +35,8 @@ transmitable_zone<public>:=class<concrete>(unique_zone):
                         Player := player[Agent]
                 then:
                         true
-                else if:
-                        UniqueZoneDebugWM[GetSession()]?
-                then:
-                        if. not Status? then. LongMessagePrint("{Descriptor.Name}: PurchaseZone is disabled", "CV-001")
+                else:
+                        if. not Status? then. LongMessagePrint("{Descriptor.Name}: PurchaseZone is disabled", "CV-001", UniqueZoneDebugWM[GetSession()]?)
 
 
 
@@ -71,15 +69,13 @@ purchase_zone<public>:=class<concrete>(transmitable_zone):
                         not BaseDependent? or inBase.Players.Find[Player]
                 then:
                         true
-                else if:
-                        UniqueZoneDebugWM[GetSession()]?
-                then:
-                        if. not Status? then. LongMessagePrint("{Descriptor.Name}: PurchaseZone is disabled", "CV-002")
-                        if:
-                                Player := player[Agent]
-                                not inBase.Players.Find[Player] and BaseDependent?
-                        then. LongErrorPrint("{Descriptor.Name}: Player is not in base", "CV-003")
-                        else. LongErrorPrint("{Descriptor.Name}: Player fetched is not a player", "CV-004")
+
+                if. not Status? then. LongMessagePrint("{Descriptor.Name}: PurchaseZone is disabled", "CV-002", UniqueZoneDebugWM[GetSession()]?)
+                if:
+                        Player := player[Agent]
+                        not inBase.Players.Find[Player] and BaseDependent?
+                then. LongErrorPrint("{Descriptor.Name}: Player is not in base", "CV-003", UniqueZoneDebugWM[GetSession()]?)
+                else. LongErrorPrint("{Descriptor.Name}: Internal Erorr when resolving Base Player Loc.", "CV-004", UniqueZoneDebugWM[GetSession()]?)
 
 
 

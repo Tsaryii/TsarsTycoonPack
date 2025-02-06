@@ -4,6 +4,6 @@ using{Interfaces}
 togglet:=class<abstract><public>(iToggleable):
     var Status:logic=false
 
-    Enable<override>():void={set Status=true, Print("Enabling")}
-    Disable<override>():void={set Status=false}
+    Enable<override>()<transacts>:void={set Status=true, Print("Enabling")}
+    Disable<override>()<transacts>:void={set Status=false}
     
