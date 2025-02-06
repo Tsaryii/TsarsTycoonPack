@@ -16,7 +16,7 @@ transmitable_zone<public>:=class<concrete>(unique_zone):
                 if:
                         Descriptor.Name = "Unnamed Volume Device"
                 then:
-                        set Descriptor.Name = "{inBase.Name}'s Unnamed Volume Device"
+                        set Descriptor.Name = "{inBase.Descriptor.Name}'s Unnamed Volume Device"
                 loop:
                         race:
                                 block:
@@ -38,7 +38,7 @@ transmitable_zone<public>:=class<concrete>(unique_zone):
                 else if:
                         UniqueZoneDebugWM[GetSession()]?
                 then:
-                        if. not Status? then. LongPrint("ERR for {Descriptor.Name}: PurchaseZone is disabled")
+                        if. not Status? then. LongMessagePrint("{Descriptor.Name}: PurchaseZone is disabled", "CV-001")
 
 
 
@@ -74,11 +74,12 @@ purchase_zone<public>:=class<concrete>(transmitable_zone):
                 else if:
                         UniqueZoneDebugWM[GetSession()]?
                 then:
-                        if. not Status? then. LongPrint("ERR for {Descriptor.Name}: PurchaseZone is disabled")
+                        if. not Status? then. LongMessagePrint("{Descriptor.Name}: PurchaseZone is disabled", "CV-002")
                         if:
                                 Player := player[Agent]
                                 not inBase.Players.Find[Player] and BaseDependent?
-                        then. LongPrint("ERR for {Descriptor.Name}: Player Not Found in base whilst BaseDependent is true")
+                        then. LongErrorPrint("{Descriptor.Name}: Player is not in base", "CV-003")
+                        else. LongErrorPrint("{Descriptor.Name}: Player fetched is not a player", "CV-004")
 
 
 
@@ -96,7 +97,7 @@ unique_zone<public>:=class(togglet, isubBaseInitAsync):
                 if:
                         Descriptor.Name = "Unnamed Volume Device"
                 then:
-                        set Descriptor.Name = "{inBase.Name}'s Unnamed Volume Device"
+                        set Descriptor.Name = "{inBase.Descriptor.Name}'s Unnamed Volume Device"
                 loop:
                         race:
                                 block:

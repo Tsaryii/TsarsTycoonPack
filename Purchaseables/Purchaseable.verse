@@ -43,7 +43,7 @@ purchaseable<public>:=class<concrete>(base_ownable):
         PurchaseZone.Init(inBase); PurchaseZone.Enable(); 
         spawn{OnBegin()}
         sync:
-            AwaitPurchase();
+            asyncAwaitPurchase();
             Sleep(1.0)
 
     #For use of the purchaseable object's children classes
@@ -51,7 +51,7 @@ purchaseable<public>:=class<concrete>(base_ownable):
      
 
     #The main loop for the purchaseable object
-    AwaitPurchase()<suspends>:void=
+    asyncAwaitPurchase()<suspends>:void=
         loop:
             Agent:=PurchaseZone.AgentEntersEvent.Await(); 
             if:
