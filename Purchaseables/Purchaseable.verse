@@ -8,7 +8,7 @@ using{Main.Abstractions.AbstractClasses}
 using{Main.Abstractions.Interfaces}
 using{GlobalPrint}
 
-base_ownable<public>:=class(isubBaseInitAsync):
+base_ownable<public>:=class(base_runtime):
 
     var MaybeOwner<public>:?base=false
 
@@ -28,14 +28,14 @@ base_ownable<public>:=class(isubBaseInitAsync):
 
 
 #The most basic class for a purchaseable object
-purchaseable<public>:=class<concrete>(base_ownable):
+purchaseable<public>:=class<concrete>(base_ownable, restorable):
 
     #Debug Variables
     var SOnPurchaseDebugWM:logic=false
 
     SetupDebug<internal>()<transacts>:void=
-        if. OnPurchaseDebugWM[GetSession()]?
-        then. set SOnPurchaseDebugWM = true
+        if(OnPurchaseDebugWM[GetSession()]?):
+            set SOnPurchaseDebugWM = true
     
 
 
@@ -43,6 +43,7 @@ purchaseable<public>:=class<concrete>(base_ownable):
     @editable var Descriptor : descriptor = descriptor{}
     @editable var CurrencyCosts : cost_field = cost_field{}
     @editable var PurchaseZone : purchase_zone = purchase_zone{}
+    
 
 
     PurchasedEvent : event(agent) = event(agent){}
@@ -55,7 +56,7 @@ purchaseable<public>:=class<concrete>(base_ownable):
         SetupDebug();
         sync:
             OnBegin()
-            asyncAwaitPurchase();
+            AwaitPurchase();
 
 
     #For use of the purchaseable object's children classes
@@ -66,7 +67,7 @@ purchaseable<public>:=class<concrete>(base_ownable):
      
 
     #The main loop for the purchaseable object
-    asyncAwaitPurchase()<suspends>:void=
+    AwaitPurchase()<suspends>:void=
         loop:
             Agent:=PurchaseZone.AgentEntersEvent.Await(); 
             if:
@@ -76,10 +77,17 @@ purchaseable<public>:=class<concrete>(base_ownable):
                 Print("Purchasing")
                 PurchasedEvent.Signal(Agent)
                 ShortSuccessPrint("{Descriptor.Name} purchased", "AAP-001", SOnPurchaseDebugWM)
+                spawn{OnPurchase()}
             else:
                 Print("Failed to purchase")
                 ShortErrorPrint("{Descriptor.Name} could not be purchased", "AAP-002", SOnPurchaseDebugWM)
-                
+
+
+    OnPurchase()<suspends>:void={}
+              
+    
+    Restore<override>()<transacts>:void=
+        PurchaseZone.Restore()
     
         
 

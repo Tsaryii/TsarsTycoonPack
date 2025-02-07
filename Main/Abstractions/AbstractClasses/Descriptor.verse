@@ -3,7 +3,7 @@ using { /Verse.org/Assets }
 using {Tooltips}
 using {Textures}
 #Describes the most basic parts of an object such as: Name, Description & Icon. 
-descriptor<public>:=class<concrete>():
+descriptor<public>:=class<concrete>:
 
     
 

@@ -1,5 +1,6 @@
 using { /Fortnite.com/Devices }
 using { /Verse.org/Simulation }
+using { /UnrealEngine.com/Temporary/SpatialMath }
 using{Purchaseables}
 using{Abstractions.Interfaces}
 using{Tooltips}
@@ -23,6 +24,7 @@ transmitable_zone<public>:=class<concrete>(unique_zone):
                                         Agent := Volume.AgentEntersEvent.Await()
                                         validStatus := CheckValidity(inBase, Agent)
                                         if. validStatus? then. AgentEntersEvent.Signal(Agent); OnEntry(inBase, Agent)
+                                        if. DisableOnSuccess? and validStatus? then. Disable()
                                 block:
                                         Agent := Volume.AgentExitsEvent.Await()
                                         validStatus := CheckValidity(inBase, Agent)
@@ -78,6 +80,7 @@ purchase_zone<public>:=class<concrete>(transmitable_zone):
 
 
         @editable {ToolTip:=BaseDependentTT} var BaseDependent : logic = true
+        @editable {ToolTip:=DisableOnSuccessTT2} var DisableOnSuccess <override> : logic=false
 
         CheckValidity<override>(inBase:base, Agent:agent):logic=
                 #Error Checking
@@ -117,11 +120,15 @@ purchase_zone<public>:=class<concrete>(transmitable_zone):
 
 
 
-unique_zone<public>:=class(togglet, isubBaseInitAsync):
+unique_zone<public>:=class(togglet, base_runtime, restorable):
 
-           
-            @editable {ToolTip:=PurchaseZoneTT}var Volume : volume_device = volume_device{}
+            var inited:logic=false
+            var DefaultLoc:transform=transform{}
+
             @editable {ToolTip:=anyNameTT} var Descriptor : descriptor = descriptor{Icon:=false}
+            @editable {ToolTip:=PurchaseZoneTT}var Volume : volume_device = volume_device{}
+            @editable {ToolTip:=DisableOnSuccessTT1} var DisableOnSuccess:logic=false
+
             AgentEntersEvent<public>:event(agent)=event(agent){}
             AgentExitsEvent<public>:event(agent)=event(agent){}
             Init<override>(inBase:base)<suspends>:void={
@@ -129,11 +136,13 @@ unique_zone<public>:=class(togglet, isubBaseInitAsync):
                         Descriptor.Name = "Unnamed Volume Device"
                 then:
                         set Descriptor.Name = "{inBase.Descriptor.Name}'s Unnamed Volume Device"
+                        set DefaultLoc = Volume.GetTransform(); set inited = true
                 loop:
                         race:
                                 block:
                                         Agent := Volume.AgentEntersEvent.Await()
                                         if. Status? then. AgentEntersEvent.Signal(Agent)
+                                        if. DisableOnSuccess? and Status? then. Disable()
                                 block:
                                         Agent := Volume.AgentExitsEvent.Await()
                                         if. Status? then. AgentExitsEvent.Signal(Agent)
@@ -141,3 +150,26 @@ unique_zone<public>:=class(togglet, isubBaseInitAsync):
 
                 }
 
+        Restore<override>()<transacts>:void=
+                if:
+                        inited?
+                        Volume.TeleportTo[DefaultLoc]
+                else:
+                        if. Debug := UniqueZoneDebugWM[GetSession()]
+                        then. ShortMessagePrint("Cannot Restore {Descriptor.Name} as it has not been initialized.", "RES-001", Debug)
+
+        Disable<override>():void=
+                (super:)Disable();
+                DefaultLocTranslation := DefaultLoc.Translation
+                UnderGroundLoc : transform = transform{
+                        Translation := vector3{X:=DefaultLocTranslation.X, Y:=DefaultLocTranslation.Y, Z:=-1000.0}
+                        Rotation := DefaultLoc.Rotation
+                        Scale := DefaultLoc.Scale
+                }
+                spawn. Volume.MoveTo(UnderGroundLoc, 1.0)
+                
+
+        
+
+
+                        

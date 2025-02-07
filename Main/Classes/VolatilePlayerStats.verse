@@ -1,3 +1,3 @@
-vplayerstats <public>:= class<concrete><unique>():
+vplayerstats <public>:= class<concrete><unique>:
 
     var maybeBase: ?base= false

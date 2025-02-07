@@ -22,4 +22,8 @@ BaseDependentTT<localizes><public>:message=
 {"If true, the triggers and all other Zone dependent functions will only be activated if the agent who triggered them is in the base."}
 
 
+DisableOnSuccessTT1<localizes><public>:message=
+{"If true, the zone will be disabled & hidden after the player enters the zone"}
 
+DisableOnSuccessTT2<localizes><public>:message=
+{"If true, the zone will be disabled & hidden after any player in this base enters the zone"}

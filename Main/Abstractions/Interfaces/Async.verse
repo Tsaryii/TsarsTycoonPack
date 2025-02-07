@@ -1,7 +1,7 @@
 
 using{Classes}
-iBeginAsync<public>:=interface():
+runtime<public>:=interface:
     OnBegin<public>()<suspends>:void
 
-isubBaseInitAsync<public>:=interface():
+base_runtime<public>:=interface:
     Init<public>(inBase:base)<suspends>:void

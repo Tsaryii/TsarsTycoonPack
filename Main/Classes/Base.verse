@@ -5,9 +5,12 @@ using { /Fortnite.com/Characters }
 using { /UnrealEngine.com/Temporary/SpatialMath }
 using { Purchaseables}
 using {Tooltips}
-using {Abstractions.AbstractClasses}
-using { GlobalPrint }
-base<public>:=class<concrete>(creative_device):
+using {Abstractions}
+using {AbstractClasses}
+using {Interfaces}
+using {GlobalPrint}
+
+base<public>:=class<concrete>(creative_device, restorable):
 
 
 
@@ -51,7 +54,7 @@ base<public>:=class<concrete>(creative_device):
             spawn. Purchaseable.Init(Self)
 
         spawn{BaseClaimer.Init(Self)}
-        spawn{asyncAwaitBaseClaim()}
+        spawn{AwaitBaseClaim()}
         BaseClaimer.Enable(); 
         TestLeaveButton.InteractedWithEvent.Subscribe(FakeBaseLeave)
         SetupDebug()
@@ -65,7 +68,7 @@ base<public>:=class<concrete>(creative_device):
         then:
             Player.ManagePlayerLeaving()
     }
-    asyncAwaitBaseClaim()<suspends>:void=
+    AwaitBaseClaim()<suspends>:void=
         loop:
             Agent := BaseClaimer.AgentEntersEvent.Await();
             
@@ -97,14 +100,14 @@ base<public>:=class<concrete>(creative_device):
         then:
             set PlayerStats.maybeBase = option{Self}
             set Players += array{inPlayer}
-            spawn{inPlayer.asyncAwaitLeave()}
+            spawn{inPlayer.AwaitLeave()}
             LongSuccessPrint("A Player has joined the: {Descriptor.Name}!", "INC-001", SBaseClaimDebugWM)
         else:
             LongErrorPrint("Failed to fetch owner when resolving player in {Descriptor.Name}", "INC-002", SBaseClaimDebugWM)
 
 
             
-    (inPlayer:player).asyncAwaitLeave()<suspends>:void=loop{Player := GetPlayspace().PlayerRemovedEvent().Await().ManagePlayerLeaving()}     
+    (inPlayer:player).AwaitLeave()<suspends>:void=loop{Player := GetPlayspace().PlayerRemovedEvent().Await().ManagePlayerLeaving()}     
                
             
 
@@ -118,9 +121,8 @@ base<public>:=class<concrete>(creative_device):
             if:
                 inPlayer = PrimaryPlayer 
             then:
-                Print("{Players.Length}")
                 if. Players.Length = 0 then. ResetBase()
-                if. Players.Length >= 1 then. set maybePrimaryPlayer = option{Players[0]}
+                else if. Players.Length >= 1 then. set maybePrimaryPlayer = option{Players[0]}
                 LongMessagePrint("The PrimaryPlayer of {Descriptor.Name} has left", "AAL-001", SBaseLeaveDebugWM)
             else:
                 LongMessagePrint("A Player has left the: {Descriptor.Name}!", "AAL-002", SBaseLeaveDebugWM)
@@ -147,6 +149,13 @@ base<public>:=class<concrete>(creative_device):
             Owner := maybeOwner?
             PlayerStats := Owner.GetStats[inPlayer]
             not PlayerStats.maybeBase?
+
+    Restore<override>()<transacts>:void=
+        BaseClaimer.Restore()
+        for:
+            Purchaseable:PurchaseablesList
+        do:
+            Purchaseable.Restore()
 
             
 

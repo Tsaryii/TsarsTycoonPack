@@ -15,7 +15,7 @@ TycoonMaster:=class<concrete>(creative_device):
 
 
     OnBegin<override>()<suspends>:void=
-        spawn{asyncManageVStats()}  
+        spawn{ManageVStats()}  
         for:
             inBase:Bases
         do:
@@ -23,7 +23,7 @@ TycoonMaster:=class<concrete>(creative_device):
 
 
 
-    asyncManageVStats()<suspends>:void=
+    ManageVStats()<suspends>:void=
         Playspace := GetPlayspace()
         for:
             Player:Playspace.GetPlayers()
@@ -36,6 +36,6 @@ TycoonMaster:=class<concrete>(creative_device):
     
 
 
-    (Player:player).InitVStats():void=if. set VPlayerStats[Player]=vplayerstats{}
+    (Player:player).InitVStats():void=if{set VPlayerStats[Player]=vplayerstats{}}
        
     GetStats(Player:player)<transacts><decides>:vplayerstats={return VPlayerStats[Player]}
