@@ -21,18 +21,35 @@ transmitable_zone<public>:=class<concrete>(unique_zone):
                         race:
                                 block:
                                         Agent := Volume.AgentEntersEvent.Await()
-                                        if. CheckValidity[inBase, Agent] then. AgentEntersEvent.Signal(Agent); OnEntry(inBase, Agent)
+                                        if. CheckValidity(inBase, Agent)? then. AgentEntersEvent.Signal(Agent); OnEntry(inBase, Agent)
                                 block:
                                         Agent := Volume.AgentExitsEvent.Await()
-                                        if. CheckValidity[inBase, Agent] then. AgentExitsEvent.Signal(Agent); OnExit(inBase, Agent)
+                                        if. CheckValidity(inBase, Agent)? then. AgentExitsEvent.Signal(Agent); OnExit(inBase, Agent)
                 
 
                 }
 
-        CheckValidity(inBase:base, Agent:agent)<transacts><decides>:void=
-                if. not Status? then. ShortMessagePrint("{Descriptor.Name}: PurchaseZone is disabled", "CV-001", UniqueZoneDebugWM[GetSession()]?)
-                Status?
-                Player := player[Agent]
+        CheckValidity(inBase:base, Agent:agent)<transacts>:logic=
+                if:
+                        SUniqueZoneDebugWM := UniqueZoneDebugWM[GetSession()]?
+                then:
+                        if:
+                                not Status? 
+                        then:
+                                ShortMessagePrint("{Descriptor.Name}: Transmittable Zone is disabled", "CV-001", SUniqueZoneDebugWM)
+                                false
+                        else:
+                                ShortMessagePrint("{Descriptor.Name}: Transmittable Zone passed all checks", "CV-002", SUniqueZoneDebugWM)
+                                true
+                else:
+                        if:
+                                Status? 
+                        then:
+                                true
+                        else:
+                                false
+
+
 
                         
                         
@@ -42,7 +59,7 @@ transmitable_zone<public>:=class<concrete>(unique_zone):
         OnEntry(inBase:base, Agent:agent):void=
                 for:
                         inTrigger:TransmitOnEntry
-                        CheckValidity[inBase, Agent]
+                        CheckValidity(inBase, Agent)?
                 do:
                         inTrigger.Trigger(Agent)
         
@@ -50,7 +67,7 @@ transmitable_zone<public>:=class<concrete>(unique_zone):
         OnExit(inBase:base, Agent:agent):void=
                 for:
                         outTrigger:TransmitOnExit
-                        CheckValidity[inBase, Agent]
+                        CheckValidity(inBase, Agent)?
                 do:
                         outTrigger.Trigger(Agent)
 
@@ -61,21 +78,29 @@ purchase_zone<public>:=class<concrete>(transmitable_zone):
 
         @editable {ToolTip:=BaseDependentTT} var BaseDependent : logic = true
 
-        CheckValidity<override>(inBase:base, Agent:agent)<transacts><decides>:void=
+        CheckValidity<override>(inBase:base, Agent:agent)<transacts>:logic=
                 #Error Checking
-                if. not Status? then. ShortMessagePrint("{Descriptor.Name}: PurchaseZone is disabled", "CV-002", UniqueZoneDebugWM[GetSession()]?)
+                if. SUniqueZoneDebugWM := UniqueZoneDebugWM[GetSession()]?
+                then{
+                if. not Status? then. ShortMessagePrint("{Descriptor.Name}: PurchaseZone is disabled", "CV-003", SUniqueZoneDebugWM)
                 if:
                         Player := player[Agent]
                         not inBase.Players.Find[Player] and BaseDependent?
-                then. LongErrorPrint("{Descriptor.Name}: Player is not in base", "CV-003", UniqueZoneDebugWM[GetSession()]?)
-                else. LongErrorPrint("{Descriptor.Name}: Internal Erorr when resolving Base Player Loc.", "CV-004", UniqueZoneDebugWM[GetSession()]?)
-                Print("Length: {inBase.Players.Length}")
+                then. LongErrorPrint("{Descriptor.Name}: Player is not in base", "CV-004", SUniqueZoneDebugWM)
+                else. LongErrorPrint("{Descriptor.Name}: Internal Erorr when resolving Base Player Loc.", "CV-005", SUniqueZoneDebugWM)
+                }
+                                
 
 
                 #Actual Check
-                Status?
-                Player2 := player[Agent]
-                not BaseDependent? or BaseDependent? and inBase.Players.Find[Player2]
+                if:
+                        Status?
+                        Player2 := player[Agent]
+                        not BaseDependent? or BaseDependent? and inBase.Players.Find[Player2]
+                then:
+                        true
+                else:
+                        false
 
 
 
