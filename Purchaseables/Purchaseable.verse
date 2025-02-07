@@ -1,37 +1,94 @@
 using { /Verse.org/Simulation }
 using { /Verse.org/Assets }
+using { /Fortnite.com/Devices }
 using {Tooltips}
 using {Textures}
+using{Main.Classes}
 using{Main.Abstractions.AbstractClasses}
+using{Main.Abstractions.Interfaces}
+using{GlobalPrint}
+
+base_ownable<public>:=class(base_runtime):
+
+    var MaybeOwner<public>:?base=false
 
 
-#Describes the most basic parts of an object such as: Name, Description & Icon. 
-descriptor<public>:=class<concrete>():
+    SetOwner(inOwner:base):void=
+        set MaybeOwner=option{inOwner}
 
-    
+    GetOwner():base=
+        if:
+            Owner := MaybeOwner?
+        then:
+            Owner
+        else:
+            return base{}
 
-   @editable {ToolTip:=anyNameTT} Name : string = "My Item Name Here"
-
-   @editable_text_box {ToolTip:=anyDescriptionTT, MultiLine:=true, MaxLength:=300} Description : string = "Hello World! \nI am using Tsars Tycoon Pack"
-   
-   @editable {ToolTip:=PurchaseableIconTT}  Icon : texture = whiteplacholder
-
-#specifies anything with cost and currency ID
-cost_field<public>:=class<concrete>():
-
-    @editable {ToolTip:=anyCostTT} Cost : float = 0.0
-    @editable {ToolTip:=anyCurrencyIDTT} CostID : int = 1
-
-
-    AttemptToChargePlayer(Player:player)<transacts><decides>:void={}
+    Init<override>(inBase:base)<suspends>:void={SetOwner(inBase); return}
 
 
 #The most basic class for a purchaseable object
-purchaseable<public>:=class<concrete>():
+purchaseable<public>:=class<concrete>(base_ownable, restorable):
+
+    #Debug Variables
+    var SOnPurchaseDebugWM:logic=false
+
+    SetupDebug<internal>()<transacts>:void=
+        if(OnPurchaseDebugWM[GetSession()]?):
+            set SOnPurchaseDebugWM = true
+    
+
+
 
     @editable var Descriptor : descriptor = descriptor{}
     @editable var CurrencyCosts : cost_field = cost_field{}
     @editable var PurchaseZone : purchase_zone = purchase_zone{}
+    
 
+
+    PurchasedEvent : event(agent) = event(agent){}
+
+    #Initializes the purchaseable object
+    Init<override>(inBase:base)<suspends>:void=
+        (super:)Init(inBase)
+        spawn{PurchaseZone.Init(inBase)};
+        PurchaseZone.Enable(); 
+        SetupDebug();
+        sync:
+            OnBegin()
+            AwaitPurchase();
+
+
+    #For use of the purchaseable object's children classes
+    OnBegin()<suspends>:void={}
+        
+
+
+     
+
+    #The main loop for the purchaseable object
+    AwaitPurchase()<suspends>:void=
+        loop:
+            Agent:=PurchaseZone.AgentEntersEvent.Await(); 
+            if:
+                Player := player[Agent]
+                CurrencyCosts.AttemptToChargePlayer[Player]
+            then:
+                Print("Purchasing")
+                PurchasedEvent.Signal(Agent)
+                ShortSuccessPrint("{Descriptor.Name} purchased", "AAP-001", SOnPurchaseDebugWM)
+                spawn{OnPurchase()}
+            else:
+                Print("Failed to purchase")
+                ShortErrorPrint("{Descriptor.Name} could not be purchased", "AAP-002", SOnPurchaseDebugWM)
+
+
+    OnPurchase()<suspends>:void={}
+              
+    
+    Restore<override>()<transacts>:void=
+        PurchaseZone.Restore()
+    
+        
 
     
