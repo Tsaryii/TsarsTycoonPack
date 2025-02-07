@@ -82,6 +82,7 @@ purchase_zone<public>:=class<concrete>(transmitable_zone):
                 #Error Checking
                 if. SUniqueZoneDebugWM := UniqueZoneDebugWM[GetSession()]?
                 then{
+                        Print("Inside PurchaseZone CheckValidity", ?Duration:=5.5)
                 if. not Status? then. ShortMessagePrint("{Descriptor.Name}: PurchaseZone is disabled", "CV-003", SUniqueZoneDebugWM)
                 if:
                         Player := player[Agent]
