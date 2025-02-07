@@ -21,15 +21,17 @@ transmitable_zone<public>:=class<concrete>(unique_zone):
                         race:
                                 block:
                                         Agent := Volume.AgentEntersEvent.Await()
-                                        if. CheckValidity(inBase, Agent)? then. AgentEntersEvent.Signal(Agent); OnEntry(inBase, Agent)
+                                        validStatus := CheckValidity(inBase, Agent)
+                                        if. validStatus? then. AgentEntersEvent.Signal(Agent); OnEntry(inBase, Agent)
                                 block:
                                         Agent := Volume.AgentExitsEvent.Await()
-                                        if. CheckValidity(inBase, Agent)? then. AgentExitsEvent.Signal(Agent); OnExit(inBase, Agent)
+                                        validStatus := CheckValidity(inBase, Agent)
+                                        if. validStatus? then. AgentExitsEvent.Signal(Agent); OnExit(inBase, Agent)
                 
 
                 }
 
-        CheckValidity(inBase:base, Agent:agent)<transacts>:logic=
+        CheckValidity(inBase:base, Agent:agent):logic=
                 if:
                         SUniqueZoneDebugWM := UniqueZoneDebugWM[GetSession()]?
                 then:
@@ -57,19 +59,25 @@ transmitable_zone<public>:=class<concrete>(unique_zone):
 
 
         OnEntry(inBase:base, Agent:agent):void=
-                for:
-                        inTrigger:TransmitOnEntry
-                        CheckValidity(inBase, Agent)?
-                do:
-                        inTrigger.Trigger(Agent)
+                validStatus:=CheckValidity(inBase, Agent)
+                if:
+                        validStatus?
+                then:
+                        for:
+                                inTrigger:TransmitOnEntry
+                        do:
+                                inTrigger.Trigger(Agent)
         
 
         OnExit(inBase:base, Agent:agent):void=
-                for:
-                        outTrigger:TransmitOnExit
-                        CheckValidity(inBase, Agent)?
-                do:
-                        outTrigger.Trigger(Agent)
+                validStatus:=CheckValidity(inBase, Agent)
+                if:
+                        validStatus?
+                then:
+                        for:
+                                outTrigger:TransmitOnExit
+                        do:
+                                outTrigger.Trigger(Agent)
 
 
 
@@ -78,7 +86,7 @@ purchase_zone<public>:=class<concrete>(transmitable_zone):
 
         @editable {ToolTip:=BaseDependentTT} var BaseDependent : logic = true
 
-        CheckValidity<override>(inBase:base, Agent:agent)<transacts>:logic=
+        CheckValidity<override>(inBase:base, Agent:agent):logic=
                 #Error Checking
                 if. SUniqueZoneDebugWM := UniqueZoneDebugWM[GetSession()]?
                 then{
