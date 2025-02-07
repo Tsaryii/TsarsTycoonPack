@@ -30,13 +30,12 @@ transmitable_zone<public>:=class<concrete>(unique_zone):
                 }
 
         CheckValidity(inBase:base, Agent:agent)<transacts><decides>:void=
-                if:
-                        Status?
-                        Player := player[Agent]
-                then:
-                        true
-                else:
-                        if. not Status? then. LongMessagePrint("{Descriptor.Name}: PurchaseZone is disabled", "CV-001", UniqueZoneDebugWM[GetSession()]?)
+                if. not Status? then. ShortMessagePrint("{Descriptor.Name}: PurchaseZone is disabled", "CV-001", UniqueZoneDebugWM[GetSession()]?)
+                Status?
+                Player := player[Agent]
+
+                        
+                        
 
 
 
@@ -63,19 +62,22 @@ purchase_zone<public>:=class<concrete>(transmitable_zone):
         @editable {ToolTip:=BaseDependentTT} var BaseDependent : logic = true
 
         CheckValidity<override>(inBase:base, Agent:agent)<transacts><decides>:void=
-                if:
-                        Status?
-                        Player := player[Agent]
-                        not BaseDependent? or inBase.Players.Find[Player]
-                then:
-                        true
-
-                if. not Status? then. LongMessagePrint("{Descriptor.Name}: PurchaseZone is disabled", "CV-002", UniqueZoneDebugWM[GetSession()]?)
+                #Error Checking
+                if. not Status? then. ShortMessagePrint("{Descriptor.Name}: PurchaseZone is disabled", "CV-002", UniqueZoneDebugWM[GetSession()]?)
                 if:
                         Player := player[Agent]
                         not inBase.Players.Find[Player] and BaseDependent?
                 then. LongErrorPrint("{Descriptor.Name}: Player is not in base", "CV-003", UniqueZoneDebugWM[GetSession()]?)
                 else. LongErrorPrint("{Descriptor.Name}: Internal Erorr when resolving Base Player Loc.", "CV-004", UniqueZoneDebugWM[GetSession()]?)
+                Print("Length: {inBase.Players.Length}")
+
+
+                #Actual Check
+                Status?
+                Player2 := player[Agent]
+                not BaseDependent? or BaseDependent? and inBase.Players.Find[Player2]
+
+
 
 
 

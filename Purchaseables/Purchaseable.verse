@@ -6,6 +6,7 @@ using {Textures}
 using{Main.Classes}
 using{Main.Abstractions.AbstractClasses}
 using{Main.Abstractions.Interfaces}
+using{GlobalPrint}
 
 base_ownable<public>:=class(isubBaseInitAsync):
 
@@ -29,6 +30,15 @@ base_ownable<public>:=class(isubBaseInitAsync):
 #The most basic class for a purchaseable object
 purchaseable<public>:=class<concrete>(base_ownable):
 
+    #Debug Variables
+    var SOnPurchaseDebugWM:logic=false
+
+    SetupDebug<internal>()<transacts>:void=
+        if. OnPurchaseDebugWM[GetSession()]?
+        then. set SOnPurchaseDebugWM = true
+    
+
+
 
     @editable var Descriptor : descriptor = descriptor{}
     @editable var CurrencyCosts : cost_field = cost_field{}
@@ -41,14 +51,18 @@ purchaseable<public>:=class<concrete>(base_ownable):
     Init<override>(inBase:base)<suspends>:void=
         (super:)Init(inBase)
         spawn{PurchaseZone.Init(inBase)};
-        spawn{OnBegin()}
         PurchaseZone.Enable(); 
+        SetupDebug();
         sync:
+            OnBegin()
             asyncAwaitPurchase();
             Sleep(1.0)
 
     #For use of the purchaseable object's children classes
     OnBegin()<suspends>:void={}
+        
+
+
      
 
     #The main loop for the purchaseable object
@@ -60,6 +74,10 @@ purchaseable<public>:=class<concrete>(base_ownable):
                 CurrencyCosts.AttemptToChargePlayer[Player]
             then:
                 PurchasedEvent.Signal(Agent)
+                ShortSuccessPrint("{Descriptor.Name} purchased", "AAP-001", SOnPurchaseDebugWM)
+            else:
+                ShortErrorPrint("{Descriptor.Name} could not be purchased", "AAP-002", SOnPurchaseDebugWM)
+                
     
         
 

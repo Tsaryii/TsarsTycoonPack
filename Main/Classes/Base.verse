@@ -122,8 +122,13 @@ base<public>:=class<concrete>(creative_device):
                 LongMessagePrint("The PrimaryPlayer of {Descriptor.Name} has left", "AAL-001", SBaseLeaveDebugWM)
             else:
                 LongMessagePrint("A Player has left the: {Descriptor.Name}!", "AAL-002", SBaseLeaveDebugWM)
+            if:
+                Owner := maybeOwner?
+                PlayerStats := Owner.GetStats[inPlayer]
+            then:
+                set PlayerStats.maybeBase = false
         else:
-            LongMessagePrint("{Descriptor.Name} has noticed a Player has left the experience and determined the player wasn't in their players list.", "AAL-003", SBaseLeaveDebugWM)
+            ShortMessagePrint("{Descriptor.Name} has noticed a Player has left the experience and determined the player wasn't in their players list.", "AAL-003", SBaseLeaveDebugWM)
                 
     ResetBase():void=
         LongMessagePrint("{Descriptor.Name}'s PrimaryPlayer has left! Initiating Base Reset", "RSB-001", SBaseLeaveDebugWM)

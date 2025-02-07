@@ -12,7 +12,7 @@ ClassesCategory<localizes><public>:message={"Anything Class based"}
 PurchaseablesCategory<localizes><public>:message={"Anything Purchaseable based"}
 BasesCategory<localizes><public>:message={"Anything Base based"}
 
-
+#Long Print
 
 LongSuccessPrint<public>(Message:string, Code:string, Logic:logic)<transacts>:void=
     if:
@@ -32,15 +32,37 @@ LongErrorPrint<public>(Message:string, ErrorCode:string, Logic:logic)<transacts>
     then:
         Print("ERROR: {Message} | ErrorCode: {ErrorCode}", ?Duration:=5.5, ?Color:=NamedColors.Red)
 
+#Short prints
+
+ShortSuccessPrint<public>(Message:string, Code:string, Logic:logic)<transacts>:void=
+    if:
+        Logic?
+    then:
+        Print("SUCCESS: {Message} | Code: {Code}", ?Duration:=2.5, ?Color:=NamedColors.Green)
+
+ShortMessagePrint<public>(Message:string, Code:string, Logic:logic)<transacts>:void=
+    if:
+        Logic?
+    then:
+        Print("NOTICE: {Message} | Code: {Code}", ?Duration:=2.5, ?Color:=NamedColors.Yellow)
+
+ShortErrorPrint<public>(Message:string, ErrorCode:string, Logic:logic)<transacts>:void=
+    if:
+        Logic?
+    then:
+        Print("ERROR: {Message} | ErrorCode: {ErrorCode}", ?Duration:=2.5, ?Color:=NamedColors.Red)
+
 var UniqueZoneDebugWM <public>:weak_map(session, logic) = map{}
 var BaseClaimDebugWM <public>:weak_map(session, logic) = map{}
 var BaseLeaveDebugWM <public>:weak_map(session, logic) = map{}
+var OnPurchaseDebugWM <public>:weak_map(session, logic) = map{}
 
 print_system:=class(creative_device):
 
     @editable {Categories:=array{AbstractClassesCategory}} var UniqueZoneDebug : logic=false
     @editable {Categories:=array{BasesCategory}} var BaseClaimDebug : logic=false
     @editable {Categories:=array{BasesCategory}} var BaseLeaveDebug : logic=false
+    @editable {Categories:=array{PurchaseablesCategory}} var OnPurchaseDebug : logic=false
 
 
     OnBegin<override>()<suspends>:void=
