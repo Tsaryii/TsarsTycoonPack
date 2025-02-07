@@ -33,7 +33,8 @@ transmitable_zone<public>:=class<concrete>(unique_zone):
 
         CheckValidity(inBase:base, Agent:agent):logic=
                 if:
-                        SUniqueZoneDebugWM := UniqueZoneDebugWM[GetSession()]?
+                        SUniqueZoneDebugWM := UniqueZoneDebugWM[GetSession()]
+                        SUniqueZoneDebugWM?
                 then:
                         if:
                                 not Status? 
@@ -41,7 +42,7 @@ transmitable_zone<public>:=class<concrete>(unique_zone):
                                 ShortMessagePrint("{Descriptor.Name}: Transmittable Zone is disabled", "CV-001", SUniqueZoneDebugWM)
                                 false
                         else:
-                                ShortMessagePrint("{Descriptor.Name}: Transmittable Zone passed all checks", "CV-002", SUniqueZoneDebugWM)
+                                ShortSuccessPrint("{Descriptor.Name}: Transmittable Zone passed all checks", "CV-002", SUniqueZoneDebugWM)
                                 true
                 else:
                         if:
@@ -59,25 +60,17 @@ transmitable_zone<public>:=class<concrete>(unique_zone):
 
 
         OnEntry(inBase:base, Agent:agent):void=
-                validStatus:=CheckValidity(inBase, Agent)
-                if:
-                        validStatus?
-                then:
-                        for:
-                                inTrigger:TransmitOnEntry
-                        do:
-                                inTrigger.Trigger(Agent)
+                for:
+                        inTrigger:TransmitOnEntry
+                do:
+                        inTrigger.Trigger(Agent)
         
 
         OnExit(inBase:base, Agent:agent):void=
-                validStatus:=CheckValidity(inBase, Agent)
-                if:
-                        validStatus?
-                then:
-                        for:
-                                outTrigger:TransmitOnExit
-                        do:
-                                outTrigger.Trigger(Agent)
+                for:
+                        outTrigger:TransmitOnExit
+                do:
+                        outTrigger.Trigger(Agent)
 
 
 
@@ -88,15 +81,21 @@ purchase_zone<public>:=class<concrete>(transmitable_zone):
 
         CheckValidity<override>(inBase:base, Agent:agent):logic=
                 #Error Checking
-                if. SUniqueZoneDebugWM := UniqueZoneDebugWM[GetSession()]?
+                if:
+                        SUniqueZoneDebugWM := UniqueZoneDebugWM[GetSession()]  
+                        SUniqueZoneDebugWM?
                 then{
-                        Print("Inside PurchaseZone CheckValidity", ?Duration:=5.5)
+                        
                 if. not Status? then. ShortMessagePrint("{Descriptor.Name}: PurchaseZone is disabled", "CV-003", SUniqueZoneDebugWM)
                 if:
                         Player := player[Agent]
-                        not inBase.Players.Find[Player] and BaseDependent?
-                then. LongErrorPrint("{Descriptor.Name}: Player is not in base", "CV-004", SUniqueZoneDebugWM)
-                else. LongErrorPrint("{Descriptor.Name}: Internal Erorr when resolving Base Player Loc.", "CV-005", SUniqueZoneDebugWM)
+                        BaseDependent? and not inBase.Players.Find[Player]
+                then:
+                        LongErrorPrint("{Descriptor.Name}: Player is not in base when base dependent", "CV-004", SUniqueZoneDebugWM)
+                else if:
+                        Player := player[Agent]
+                        BaseDependent? and inBase.Players.Find[Player]
+                        ShortSuccessPrint("Successfully purchased, from: {Descriptor.Name}", "CV-005", SUniqueZoneDebugWM)
                 }
                                 
 

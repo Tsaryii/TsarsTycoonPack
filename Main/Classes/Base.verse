@@ -78,7 +78,7 @@ base<public>:=class<concrete>(creative_device):
                     set maybePrimaryPlayer = option{Player}
                 else:
                     LongMessagePrint("Player attempted to claim {Descriptor.Name} but was denied", "ABC-001", SBaseClaimDebugWM)
-            if. Players.Length>=1 then:
+            else if. Players.Length>=1 then:
                 if:
                     Player := player[Agent]
                     Player.CanClaimBase[]
@@ -86,6 +86,7 @@ base<public>:=class<concrete>(creative_device):
                     Incorperate(Player)
                 else:
                     LongMessagePrint("Player attempted to claim {Descriptor.Name} but was denied", "ABC-002", SBaseClaimDebugWM)
+            Sleep(1.0)
 
 
 
@@ -110,13 +111,14 @@ base<public>:=class<concrete>(creative_device):
 
     (inPlayer:player).ManagePlayerLeaving():void=
         if:
-            inPlayer = inPlayer 
+            Players.Find[inPlayer] 
             PrimaryPlayer := maybePrimaryPlayer?
         then:
             set Players = Players.RemoveAllElements(inPlayer)
             if:
                 inPlayer = PrimaryPlayer 
             then:
+                Print("{Players.Length}")
                 if. Players.Length = 0 then. ResetBase()
                 if. Players.Length >= 1 then. set maybePrimaryPlayer = option{Players[0]}
                 LongMessagePrint("The PrimaryPlayer of {Descriptor.Name} has left", "AAL-001", SBaseLeaveDebugWM)

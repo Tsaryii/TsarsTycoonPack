@@ -56,7 +56,7 @@ purchaseable<public>:=class<concrete>(base_ownable):
         sync:
             OnBegin()
             asyncAwaitPurchase();
-            Sleep(1.0)
+
 
     #For use of the purchaseable object's children classes
     OnBegin()<suspends>:void={}
@@ -73,9 +73,11 @@ purchaseable<public>:=class<concrete>(base_ownable):
                 Player := player[Agent]
                 CurrencyCosts.AttemptToChargePlayer[Player]
             then:
+                Print("Purchasing")
                 PurchasedEvent.Signal(Agent)
                 ShortSuccessPrint("{Descriptor.Name} purchased", "AAP-001", SOnPurchaseDebugWM)
             else:
+                Print("Failed to purchase")
                 ShortErrorPrint("{Descriptor.Name} could not be purchased", "AAP-002", SOnPurchaseDebugWM)
                 
     
