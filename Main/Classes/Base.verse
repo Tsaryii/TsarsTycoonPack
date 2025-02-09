@@ -66,6 +66,8 @@ base<public>:=class<concrete>(creative_device, restorable):
 
         spawn{BaseClaimer.Init(Self)}
         spawn{AwaitBaseClaim()}
+        spawn{PersistentConfig.Init(Self)}
+        spawn{CurrencyConfig.Init(Self)}
         BaseClaimer.Enable(); 
         TestLeaveButton.InteractedWithEvent.Subscribe(FakeBaseLeave)
         SetupDebug()

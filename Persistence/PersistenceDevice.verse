@@ -24,8 +24,9 @@ persister<public>:=class<concrete>(creative_device, base_runtime):
 
 
     OnBegin<override>()<suspends>:void=
-        spawn{ManagePlayerPersistence()};
         SetupDebug()
+        spawn{ManagePlayerPersistence()};
+        
 
 
 
@@ -43,6 +44,7 @@ persister<public>:=class<concrete>(creative_device, base_runtime):
 
     SetupDebug<internal>()<transacts>:void=
         if(PersistenceSetupWM[GetSession()]?):
+            Print("Debug Setup")
             set SPersistenceSetupWM = true
     
 
@@ -50,13 +52,16 @@ persister<public>:=class<concrete>(creative_device, base_runtime):
 
     #Change this value if you're using more than 100 persistence cores
     MaxPersistenceCores:int=100
+
     (Player:player).SetupPersistence()<transacts>:void=
+        Print("Setting Up Persistence")
         if:
             not PlayerProfileDataMap[Player]
             set PlayerProfileDataMap[Player] = player_profile_data{}
         then:
             if(Owner := maybeOwner?):
                 DelidPersistlessCurrencies(Player, Owner, "SP-002")
+                Print("Debug Setup")
                 for:
                     Index -> Currency:Owner.CurrencyConfig.CurrencyList
                     PlayerData := GetStats[Player]
@@ -66,8 +71,11 @@ persister<public>:=class<concrete>(creative_device, base_runtime):
                         MakePlayerProfileData<constructor>(PlayerData)
                         CoreSaves:=ChangeCoreSave(PlayerData.CoreSaves, PersistenceCore, core_save{AssociatedCurrencies:=map{Index => Currency.InitialValue}})
                     if. set PlayerProfileDataMap[Player] = Source
+            else:
+                Print("No Owner")
                 
         else:
+            Print("Idb")
             if(Owner := maybeOwner?):
                 ShortMessagePrint("Playe already has a profile data, skipping setup & trimming disabled currencies", "SP-003", SPersistenceSetupWM)
                 DelidPersistlessCurrencies(Player, Owner, "SP-004")
