@@ -1,6 +1,7 @@
 using { /Verse.org/Simulation }
 using { /Verse.org/Assets }
 using { /Fortnite.com/Devices }
+using { /Fortnite.com/Characters }
 using {Tooltips}
 using {Textures}
 using{Main.Classes}
@@ -40,7 +41,7 @@ purchaseable<public>:=class<concrete>(base_ownable, restorable):
 
 
 
-    @editable var Descriptor : descriptor = descriptor{}
+    @editable var Details : descriptor = descriptor{}
     @editable var CurrencyCosts : cost_field = cost_field{}
     @editable var PurchaseZone : purchase_zone = purchase_zone{}
     
@@ -74,13 +75,11 @@ purchaseable<public>:=class<concrete>(base_ownable, restorable):
                 Player := player[Agent]
                 CurrencyCosts.AttemptToChargePlayer[Player]
             then:
-                Print("Purchasing")
                 PurchasedEvent.Signal(Agent)
-                ShortSuccessPrint("{Descriptor.Name} purchased", "AAP-001", SOnPurchaseDebugWM)
+                ShortSuccessPrint("{Details.Name} purchased", "AP-001", SOnPurchaseDebugWM)
                 spawn{OnPurchase()}
             else:
-                Print("Failed to purchase")
-                ShortErrorPrint("{Descriptor.Name} could not be purchased", "AAP-002", SOnPurchaseDebugWM)
+                ShortErrorPrint("{Details.Name} could not be purchased", "AP-002", SOnPurchaseDebugWM)
 
 
     OnPurchase()<suspends>:void={}

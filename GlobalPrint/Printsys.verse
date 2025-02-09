@@ -11,6 +11,39 @@ InterfacesCategory<localizes><public>:message={"Anything Interface based"}
 ClassesCategory<localizes><public>:message={"Anything Class based"}
 PurchaseablesCategory<localizes><public>:message={"Anything Purchaseable based"}
 BasesCategory<localizes><public>:message={"Anything Base based"}
+PersistenceSetupCategory<localizes><public>:message={"Anything Persistence setup based"}
+
+
+var UniqueZoneDebugWM <public>:weak_map(session, logic) = map{}
+var BaseClaimDebugWM <public>:weak_map(session, logic) = map{}
+var BaseLeaveDebugWM <public>:weak_map(session, logic) = map{}
+var OnPurchaseDebugWM <public>:weak_map(session, logic) = map{}
+var PersistenceSetupWM <public>:weak_map(session, logic) = map{}
+
+print_system:=class(creative_device):
+
+    @editable {Categories:=array{AbstractClassesCategory}} var UniqueZoneDebug : logic=false
+    @editable {Categories:=array{BasesCategory}} var BaseClaimDebug : logic=false
+    @editable {Categories:=array{BasesCategory}} var BaseLeaveDebug : logic=false
+    @editable {Categories:=array{PurchaseablesCategory}} var OnPurchaseDebug : logic=false
+    @editable {Categories:=array{PersistenceSetupCategory}} var PersistenceSetup : logic=false
+
+
+    OnBegin<override>()<suspends>:void=
+        if:
+            set UniqueZoneDebugWM[GetSession()]=UniqueZoneDebug
+            set BaseClaimDebugWM[GetSession()]=BaseClaimDebug
+            set BaseLeaveDebugWM[GetSession()]=BaseLeaveDebug
+            set OnPurchaseDebugWM[GetSession()]=OnPurchaseDebug
+            set PersistenceSetupWM[GetSession()]=PersistenceSetup
+        then:
+            Print("Successfully set debug values --> initiating print system")
+
+
+
+
+
+
 
 #Long Print
 
@@ -51,25 +84,3 @@ ShortErrorPrint<public>(Message:string, ErrorCode:string, Logic:logic)<transacts
         Logic?
     then:
         Print("ERROR: {Message} | ErrorCode: {ErrorCode}", ?Duration:=2.5, ?Color:=NamedColors.Red)
-
-var UniqueZoneDebugWM <public>:weak_map(session, logic) = map{}
-var BaseClaimDebugWM <public>:weak_map(session, logic) = map{}
-var BaseLeaveDebugWM <public>:weak_map(session, logic) = map{}
-var OnPurchaseDebugWM <public>:weak_map(session, logic) = map{}
-
-print_system:=class(creative_device):
-
-    @editable {Categories:=array{AbstractClassesCategory}} var UniqueZoneDebug : logic=false
-    @editable {Categories:=array{BasesCategory}} var BaseClaimDebug : logic=false
-    @editable {Categories:=array{BasesCategory}} var BaseLeaveDebug : logic=false
-    @editable {Categories:=array{PurchaseablesCategory}} var OnPurchaseDebug : logic=false
-
-
-    OnBegin<override>()<suspends>:void=
-        if:
-            set UniqueZoneDebugWM[GetSession()]=UniqueZoneDebug
-            set BaseClaimDebugWM[GetSession()]=BaseClaimDebug
-            set BaseLeaveDebugWM[GetSession()]=BaseLeaveDebug
-        then:
-            Print("Successfully set debug values --> initiating print system")
-

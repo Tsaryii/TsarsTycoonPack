@@ -27,3 +27,34 @@ DisableOnSuccessTT1<localizes><public>:message=
 
 DisableOnSuccessTT2<localizes><public>:message=
 {"If true, the zone will be disabled & hidden after any player in this base enters the zone"}
+
+
+
+#Persistence Tool Tips
+
+PersisterTT<localizes><public>:message=
+{"A Device that manages the saving and loading of data. Should only be used once per base unless each base is identical."}
+
+
+AllowPurchaseablePersistenceTT<localizes><public>:message=
+{"If true, all purchaseable objects with persistence checked will be saved and loaded."}
+
+AllowCurrencyPersistenceTT<localizes><public>:message=
+{"If true, all currencies with persistence checked will be saved and loaded."}
+
+AllowRebirthPersistenceTT<localizes><public>:message=
+{"If true, all rebirths will be saved and loaded."}
+
+PersistenceCoreTT<localizes><public>:message=
+{"A Unique persistence identifier. For example, if you have two different base types, you can set this to 0 for the first base and 1 for the second base."}
+
+MaximumCurrenciesToInitTT<localizes><public>:message=
+{"The maximum number of currencies that will be initialized for each player. Turn this number down if you're experiencing performance issues."}
+
+#Currency Tool Tips
+
+CurrencyManagerTT<localizes><public>:message=
+{"Can be used to add, remove, and modify currencies. ONE Manager can manage ALL bases unless you want different currencies for each base."}
+
+InitialValueTT<localizes><public>:message=
+{"The amount of this currency any player will start with."}

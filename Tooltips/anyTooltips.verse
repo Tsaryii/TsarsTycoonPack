@@ -6,7 +6,7 @@ anyDescriptionTT<localizes><public>:message=
 {"The description for this object, has no internal use."}
 
 
-anyDescriptorTT<localizes><public>:message=
+anyDetailsTT<localizes><public>:message=
 {"Describes the most basic parts of an object such as: Name, Description & Icon."}
     
 anyCostTT<localizes><public>:message=
@@ -16,5 +16,5 @@ anyCurrencyIDTT<localizes><public>:message=
 {"Specifies the currency ID for this object."}
     
 
-
-    
+anyPersistableTT<localizes><public>:message=
+{"If true, the object will have the ability to save and load data if and only if it's connected base has a Persister properly setup."}

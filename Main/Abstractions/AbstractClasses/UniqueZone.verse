@@ -14,10 +14,7 @@ transmitable_zone<public>:=class<concrete>(unique_zone):
         @editable {ToolTip:=TransmitOnExitTT} var TransmitOnExit : []trigger_device = array{}
 
         Init<override>(inBase:base)<suspends>:void={
-                if:
-                        Descriptor.Name = "Unnamed Volume Device"
-                then:
-                        set Descriptor.Name = "{inBase.Descriptor.Name}'s Unnamed Volume Device"
+                set Name = "{inBase.Details.Name}'s Unnamed Volume Device"
                 loop:
                         race:
                                 block:
@@ -41,10 +38,10 @@ transmitable_zone<public>:=class<concrete>(unique_zone):
                         if:
                                 not Status? 
                         then:
-                                ShortMessagePrint("{Descriptor.Name}: Transmittable Zone is disabled", "CV-001", SUniqueZoneDebugWM)
+                                ShortMessagePrint("{Name}: Transmittable Zone is disabled", "CV-001", SUniqueZoneDebugWM)
                                 false
                         else:
-                                ShortSuccessPrint("{Descriptor.Name}: Transmittable Zone passed all checks", "CV-002", SUniqueZoneDebugWM)
+                                ShortSuccessPrint("{Name}: Transmittable Zone passed all checks", "CV-002", SUniqueZoneDebugWM)
                                 true
                 else:
                         if:
@@ -89,16 +86,16 @@ purchase_zone<public>:=class<concrete>(transmitable_zone):
                         SUniqueZoneDebugWM?
                 then{
                         
-                if. not Status? then. ShortMessagePrint("{Descriptor.Name}: PurchaseZone is disabled", "CV-003", SUniqueZoneDebugWM)
+                if. not Status? then. ShortMessagePrint("{Name}: PurchaseZone is disabled", "CV-003", SUniqueZoneDebugWM)
                 if:
                         Player := player[Agent]
                         BaseDependent? and not inBase.Players.Find[Player]
                 then:
-                        LongErrorPrint("{Descriptor.Name}: Player is not in base when base dependent", "CV-004", SUniqueZoneDebugWM)
+                        LongErrorPrint("{Name}: Player is not in base when base dependent", "CV-004", SUniqueZoneDebugWM)
                 else if:
                         Player := player[Agent]
                         BaseDependent? and inBase.Players.Find[Player]
-                        ShortSuccessPrint("Successfully purchased, from: {Descriptor.Name}", "CV-005", SUniqueZoneDebugWM)
+                        ShortSuccessPrint("Successfully purchased, from: {Name}", "CV-005", SUniqueZoneDebugWM)
                 }
                                 
 
@@ -125,17 +122,14 @@ unique_zone<public>:=class(togglet, base_runtime, restorable):
             var inited:logic=false
             var DefaultLoc:transform=transform{}
 
-            @editable {ToolTip:=anyNameTT} var Descriptor : descriptor = descriptor{Icon:=false}
+            var Name:string=""
             @editable {ToolTip:=PurchaseZoneTT}var Volume : volume_device = volume_device{}
             @editable {ToolTip:=DisableOnSuccessTT1} var DisableOnSuccess:logic=false
 
             AgentEntersEvent<public>:event(agent)=event(agent){}
             AgentExitsEvent<public>:event(agent)=event(agent){}
             Init<override>(inBase:base)<suspends>:void={
-                if:
-                        Descriptor.Name = "Unnamed Volume Device"
-                then:
-                        set Descriptor.Name = "{inBase.Descriptor.Name}'s Unnamed Volume Device"
+                        set Name = "{inBase.Details.Name}'s Volume Device"
                         set DefaultLoc = Volume.GetTransform(); set inited = true
                 loop:
                         race:
@@ -156,7 +150,7 @@ unique_zone<public>:=class(togglet, base_runtime, restorable):
                         Volume.TeleportTo[DefaultLoc]
                 else:
                         if. Debug := UniqueZoneDebugWM[GetSession()]
-                        then. ShortMessagePrint("Cannot Restore {Descriptor.Name} as it has not been initialized.", "RES-001", Debug)
+                        then. ShortMessagePrint("Cannot Restore {Name} as it has not been initialized.", "RES-001", Debug)
 
         Disable<override>():void=
                 (super:)Disable();

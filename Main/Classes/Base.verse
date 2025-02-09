@@ -9,6 +9,8 @@ using {Abstractions}
 using {AbstractClasses}
 using {Interfaces}
 using {GlobalPrint}
+using {Persistence}
+using {Currencies}
 
 base<public>:=class<concrete>(creative_device, restorable):
 
@@ -25,11 +27,20 @@ base<public>:=class<concrete>(creative_device, restorable):
     #Events
     var OnBaseClaim : event(player) = event(player){}
 
+
+    #Editable Configs
+
+
     #Editable Variables
-    @editable var  Descriptor <public> : descriptor = descriptor{Name:="My Base Name here"}
-    @editable var  BaseClaimer <public> : transmitable_zone = transmitable_zone{}
     @editable var TestLeaveButton <public> : button_device = button_device{}
-    @editable_container {AllowReordering:=true} var PurchaseablesList <public> : []purchaseable = array{}
+    @editable var  Details <public> : descriptor = descriptor{Name:="My Base Name here"}
+    @editable var  BaseClaimer <public> : transmitable_zone = transmitable_zone{}
+    @editable {Categories:=array{ConfigsCategory}, ToolTip:=PersisterTT} var PersistentConfig <public> : persister = persister{}
+    @editable {Categories:=array{ConfigsCategory}, ToolTip:=CurrencyManagerTT} var CurrencyConfig <public> : currency_manager = currency_manager{}
+    @editable_container {AllowReordering:=true} var purchaseables <public> : []purchaseable = array{}
+
+
+    ConfigsCategory <localizes><public>:message="Device Configs"
 
 
 
@@ -49,7 +60,7 @@ base<public>:=class<concrete>(creative_device, restorable):
 
     OnBegin<override>()<suspends>:void=
         for:
-            Purchaseable:PurchaseablesList
+            Purchaseable:purchaseables
         do:
             spawn. Purchaseable.Init(Self)
 
@@ -80,7 +91,7 @@ base<public>:=class<concrete>(creative_device, restorable):
                     Incorperate(Player)
                     set maybePrimaryPlayer = option{Player}
                 else:
-                    LongMessagePrint("Player attempted to claim {Descriptor.Name} but was denied", "ABC-001", SBaseClaimDebugWM)
+                    LongMessagePrint("Player attempted to claim {Details.Name} but was denied", "ABC-001", SBaseClaimDebugWM)
             else if. Players.Length>=1 then:
                 if:
                     Player := player[Agent]
@@ -88,7 +99,7 @@ base<public>:=class<concrete>(creative_device, restorable):
                 then:
                     Incorperate(Player)
                 else:
-                    LongMessagePrint("Player attempted to claim {Descriptor.Name} but was denied", "ABC-002", SBaseClaimDebugWM)
+                    LongMessagePrint("Player attempted to claim {Details.Name} but was denied", "ABC-002", SBaseClaimDebugWM)
             Sleep(1.0)
 
 
@@ -101,9 +112,9 @@ base<public>:=class<concrete>(creative_device, restorable):
             set PlayerStats.maybeBase = option{Self}
             set Players += array{inPlayer}
             spawn{inPlayer.AwaitLeave()}
-            LongSuccessPrint("A Player has joined the: {Descriptor.Name}!", "INC-001", SBaseClaimDebugWM)
+            LongSuccessPrint("A Player has joined the: {Details.Name}!", "INC-001", SBaseClaimDebugWM)
         else:
-            LongErrorPrint("Failed to fetch owner when resolving player in {Descriptor.Name}", "INC-002", SBaseClaimDebugWM)
+            LongErrorPrint("Failed to fetch owner when resolving player in {Details.Name}", "INC-002", SBaseClaimDebugWM)
 
 
             
@@ -123,19 +134,19 @@ base<public>:=class<concrete>(creative_device, restorable):
             then:
                 if. Players.Length = 0 then. ResetBase()
                 else if. Players.Length >= 1 then. set maybePrimaryPlayer = option{Players[0]}
-                LongMessagePrint("The PrimaryPlayer of {Descriptor.Name} has left", "AAL-001", SBaseLeaveDebugWM)
+                LongMessagePrint("The PrimaryPlayer of {Details.Name} has left", "AAL-001", SBaseLeaveDebugWM)
             else:
-                LongMessagePrint("A Player has left the: {Descriptor.Name}!", "AAL-002", SBaseLeaveDebugWM)
+                LongMessagePrint("A Player has left the: {Details.Name}!", "AAL-002", SBaseLeaveDebugWM)
             if:
                 Owner := maybeOwner?
                 PlayerStats := Owner.GetStats[inPlayer]
             then:
                 set PlayerStats.maybeBase = false
         else:
-            ShortMessagePrint("{Descriptor.Name} has noticed a Player has left the experience and determined the player wasn't in their players list.", "AAL-003", SBaseLeaveDebugWM)
+            ShortMessagePrint("{Details.Name} has noticed a Player has left the experience and determined the player wasn't in their players list.", "AAL-003", SBaseLeaveDebugWM)
                 
     ResetBase():void=
-        LongMessagePrint("{Descriptor.Name}'s PrimaryPlayer has left! Initiating Base Reset", "RSB-001", SBaseLeaveDebugWM)
+        LongMessagePrint("{Details.Name}'s PrimaryPlayer has left! Initiating Base Reset", "RSB-001", SBaseLeaveDebugWM)
             
                 
                 
@@ -153,7 +164,7 @@ base<public>:=class<concrete>(creative_device, restorable):
     Restore<override>()<transacts>:void=
         BaseClaimer.Restore()
         for:
-            Purchaseable:PurchaseablesList
+            Purchaseable:purchaseables
         do:
             Purchaseable.Restore()
 
