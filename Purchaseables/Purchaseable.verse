@@ -17,7 +17,7 @@ base_ownable<public>:=class(base_runtime):
     SetOwner(inOwner:base):void=
         set MaybeOwner=option{inOwner}
 
-    GetOwner():base=
+    UnconditionallyGetOwner():base=
         if:
             Owner := MaybeOwner?
         then:
@@ -55,6 +55,7 @@ purchaseable<public>:=class<concrete>(base_ownable, restorable):
         spawn{PurchaseZone.Init(inBase)};
         PurchaseZone.Enable(); 
         SetupDebug();
+        SetOwner(inBase)
         sync:
             OnBegin()
             AwaitPurchase();
@@ -73,7 +74,8 @@ purchaseable<public>:=class<concrete>(base_ownable, restorable):
             Agent:=PurchaseZone.AgentEntersEvent.Await(); 
             if:
                 Player := player[Agent]
-                CurrencyCosts.AttemptToChargePlayer[Player]
+                Owner := MaybeOwner?
+                CurrencyCosts.Submit[Owner, Player]
             then:
                 PurchasedEvent.Signal(Agent)
                 ShortSuccessPrint("{Details.Name} purchased", "AP-001", SOnPurchaseDebugWM)

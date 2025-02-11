@@ -6,12 +6,13 @@ using{Tooltips}
 #Categories
 
 
-AbstractClassesCategory<localizes><public>:message={"Anything Abstract Class based"}
-InterfacesCategory<localizes><public>:message={"Anything Interface based"}
-ClassesCategory<localizes><public>:message={"Anything Class based"}
-PurchaseablesCategory<localizes><public>:message={"Anything Purchaseable based"}
-BasesCategory<localizes><public>:message={"Anything Base based"}
-PersistenceSetupCategory<localizes><public>:message={"Anything Persistence setup based"}
+AbstractClassesCategory<localizes><public>:message={"Abstract Classes"}
+InterfacesCategory<localizes><public>:message={"Interfaces"}
+ClassesCategory<localizes><public>:message={"Classes"}
+PurchaseablesCategory<localizes><public>:message={"Purchaseables"}
+BasesCategory<localizes><public>:message={"Bases"}
+PersistenceSetupCategory<localizes><public>:message={"Persistence"}
+CurrencyCategory<localizes><public>:message={"Currencies"}
 
 
 var UniqueZoneDebugWM <public>:weak_map(session, logic) = map{}
@@ -19,6 +20,7 @@ var BaseClaimDebugWM <public>:weak_map(session, logic) = map{}
 var BaseLeaveDebugWM <public>:weak_map(session, logic) = map{}
 var OnPurchaseDebugWM <public>:weak_map(session, logic) = map{}
 var PersistenceSetupWM <public>:weak_map(session, logic) = map{}
+var CurrencyCategoryWM <public>:weak_map(session, logic) = map{}
 
 print_system:=class(creative_device):
 
@@ -27,6 +29,7 @@ print_system:=class(creative_device):
     @editable {Categories:=array{BasesCategory}} var BaseLeaveDebug : logic=false
     @editable {Categories:=array{PurchaseablesCategory}} var OnPurchaseDebug : logic=false
     @editable {Categories:=array{PersistenceSetupCategory}} var PersistenceSetup : logic=false
+    @editable {Categories:=array{CurrencyCategory}} var CurrencyDebug : logic=false
 
 
     OnBegin<override>()<suspends>:void=
@@ -36,6 +39,7 @@ print_system:=class(creative_device):
             set BaseLeaveDebugWM[GetSession()]=BaseLeaveDebug
             set OnPurchaseDebugWM[GetSession()]=OnPurchaseDebug
             set PersistenceSetupWM[GetSession()]=PersistenceSetup
+            set CurrencyCategoryWM[GetSession()]=CurrencyDebug
         then:
             Print("Successfully set debug values --> initiating print system")
 

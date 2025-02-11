@@ -1,16 +1,16 @@
 using { /Verse.org/Simulation }
 
 #Defines the player profile data class and the map that stores it
-player_profile_data := class<final><persistable>:
+player_profile_data <public> := class<final><persistable>:
     Version:int = 0
     CoreSaves  : [int]core_save = map{}
 
 
-core_save := class <final><persistable>:
-    Rebirths:int = 0
-    AssociatedCurrencies: [int]int = map{}
-    AssociatedUnlocks: []int = array{}
-    Experience : int = 0
+core_save <public> := class <final><persistable>:
+    Rebirths <public> :int = 0
+    AssociatedCurrencies <public>  : [int]int = map{}
+    AssociatedUnlocks <public>  : []int = array{}
+    Experience <public>  : int = 0
 
  
 #Defines the map that stores the player profile data
@@ -109,7 +109,7 @@ DelidUnlocks(P:player, CoreSaveID:int)<transacts><decides>:void=
             CoreSaves:=ChangeCoreSave(Map.CoreSaves, CoreSaveID, NewSave)
 
 #Updates the associated currencies for a player
-UpdateAssociatedCurrencies(P:player, CurrencyKey:int, CurrencyValue:int, CoreSaveID:int)<transacts>:void=
+(P:player).UpdateAssociatedCurrencies<public>(CurrencyKey:int, CurrencyValue:int, CoreSaveID:int)<transacts>:void=
     if:
         P.IsActive[]
         Map := PlayerProfileDataMap[P]
@@ -160,7 +160,7 @@ UpdateXP(P:player, XP:int, CoreSaveID:int)<transacts>:void=
             MakePlayerProfileData<constructor>(Map)
             CoreSaves:=ChangeCoreSave(Map.CoreSaves, CoreSaveID, NewSave)
 #Gets the associated currencies for a player
-GetStats(Agent:agent)<decides><transacts>:player_profile_data=
+GetStats<public>(Agent:agent)<decides><transacts>:player_profile_data=
 {
     var PlayerStats : player_profile_data = player_profile_data{}
     if:
@@ -171,7 +171,7 @@ GetStats(Agent:agent)<decides><transacts>:player_profile_data=
     PlayerStats
 }
      
-GetCoreStats(Agent:agent, CoreStatsID:int)<decides><transacts>:core_save=
+(Agent:agent).GetCoreStats<public>(CoreStatsID:int)<decides><transacts>:core_save=
     {
         var PlayerStats : player_profile_data = player_profile_data{}
         if:

@@ -13,7 +13,7 @@ anyCostTT<localizes><public>:message=
 {"The cost for this object."}
 
 anyCurrencyIDTT<localizes><public>:message=
-{"Specifies the currency ID for this object."}
+{"Specifies the currency ID for this object. IDs start from 0"}
     
 
 anyPersistableTT<localizes><public>:message=

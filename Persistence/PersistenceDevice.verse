@@ -18,16 +18,11 @@ persister<public>:=class<concrete>(creative_device, base_runtime):
     var maybeOwner:?base=false
 
 
-    Init<override>(inBase:base)<suspends>:void=set maybeOwner= option. inBase
-        
-    
-
-
-    OnBegin<override>()<suspends>:void=
+    Init<override>(inBase:base)<suspends>:void=
+        set maybeOwner = option. inBase
         SetupDebug()
         spawn{ManagePlayerPersistence()};
         
-
 
 
     ManagePlayerPersistence()<suspends>:void=
@@ -62,14 +57,21 @@ persister<public>:=class<concrete>(creative_device, base_runtime):
             if(Owner := maybeOwner?):
                 DelidPersistlessCurrencies(Player, Owner, "SP-002")
                 Print("Debug Setup")
+                var DelidMap : [int]int = map{}
                 for:
                     Index -> Currency:Owner.CurrencyConfig.CurrencyList
-                    PlayerData := GetStats[Player]
+                    set DelidMap[Index] = Currency.InitialValue
                 do:
-                    ShortMessagePrint("Setting up persistence for currency {Currency.Details.Name}", "SP-001", SPersistenceSetupWM)
+                    ShortMessagePrint("Setting up persistence for currency {Currency.Details.Name} ID: {Index} with core: {PersistenceCore}", "SP-001", SPersistenceSetupWM)
+                    
+                if:
+                    PlayerData := GetStats[Player]
+                    
+                
+                then:
                     Source := player_profile_data:
                         MakePlayerProfileData<constructor>(PlayerData)
-                        CoreSaves:=ChangeCoreSave(PlayerData.CoreSaves, PersistenceCore, core_save{AssociatedCurrencies:=map{Index => Currency.InitialValue}})
+                        CoreSaves:=ChangeCoreSave(PlayerData.CoreSaves, PersistenceCore, core_save{AssociatedCurrencies:=DelidMap})
                     if. set PlayerProfileDataMap[Player] = Source
             else:
                 Print("No Owner")

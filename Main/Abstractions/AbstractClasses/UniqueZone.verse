@@ -95,7 +95,7 @@ purchase_zone<public>:=class<concrete>(transmitable_zone):
                 else if:
                         Player := player[Agent]
                         BaseDependent? and inBase.Players.Find[Player]
-                        ShortSuccessPrint("Successfully purchased, from: {Name}", "CV-005", SUniqueZoneDebugWM)
+                        ShortSuccessPrint("Player eneterd: {Name}", "CV-005", SUniqueZoneDebugWM)
                 }
                                 
 
