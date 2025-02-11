@@ -15,26 +15,20 @@ cost_field<public>:=class<concrete>:
 
     Submit<public>(inBase:base, Player:player)<transacts><decides>:void=
     {
-        Print("Got to submit")
         Player.HasEnoughCurrency[inBase]
-        if.  ShortSuccessPrint("Item costing {Cost} with ID {CostID} parsed `HasEnoughCurrency` check.", "SBM-001", CurrencyCategoryWM[GetSession()]?)
+        if.  ShortSuccessPrint("Item costing {Cost} with ID {CostID} parsed `HasEnoughCurrency` check.", "SBM-001", CurrencyCategoryWM[GetSession()])
 
 
         Player.RemoveCurrency[inBase, Cost, CostID]
-        if. ShortSuccessPrint("Item costing {Cost} with ID {CostID} parsed `RemoveCurrency` check.", "SBM-002", CurrencyCategoryWM[GetSession()]?)
+        if. ShortSuccessPrint("Item costing {Cost} with ID {CostID} parsed `RemoveCurrency` check.", "SBM-002", CurrencyCategoryWM[GetSession()])
         
     }
 
     (Player:player).HasEnoughCurrency(inBase:base)<transacts><decides>:void=
-        if. ShortMessagePrint("Establishing & Checking Currency Values", "HEC-001", CurrencyCategoryWM[GetSession()]?)
-    
-        Print("Checking Currency Values, Cost: {Cost}, CostID: {CostID}")
+        if. ShortMessagePrint("Establishing & Checking Currency Values", "HEC-001", CurrencyCategoryWM[GetSession()])
         PersistenceCore := inBase.PersistentConfig.PersistenceCore
         Stats := Player.GetCoreStats[PersistenceCore]
-        Print("Got Stats")
         CurrencyValue := Stats.AssociatedCurrencies[CostID]
-        Print("Got Currency Value")
-        Print("Checking Currency Values, Cost: {Cost}, CostID: {CostID}, CurrencyValue: {CurrencyValue}")
         CurrencyValue >= Cost
 
     

@@ -55,19 +55,19 @@ LongSuccessPrint<public>(Message:string, Code:string, Logic:logic)<transacts>:vo
     if:
         Logic?
     then:
-        Print("SUCCESS: {Message} | Code: {Code}", ?Duration:=5.5, ?Color:=NamedColors.Green)
+        Print("SUCCESS: {Message} | Code: {Code}", ?Duration:=10.0, ?Color:=NamedColors.Green)
 
 LongMessagePrint<public>(Message:string, Code:string, Logic:logic)<transacts>:void=
     if:
         Logic?
     then:
-        Print("NOTICE: {Message} | Code: {Code}", ?Duration:=5.5, ?Color:=NamedColors.Yellow)
+        Print("NOTICE: {Message} | Code: {Code}", ?Duration:=10.0, ?Color:=NamedColors.Yellow)
 
 LongErrorPrint<public>(Message:string, ErrorCode:string, Logic:logic)<transacts>:void=
     if:
         Logic?
     then:
-        Print("ERROR: {Message} | ErrorCode: {ErrorCode}", ?Duration:=5.5, ?Color:=NamedColors.Red)
+        Print("ERROR: {Message} | ErrorCode: {ErrorCode}", ?Duration:=10.0, ?Color:=NamedColors.Red)
 
 #Short prints
 
@@ -75,16 +75,16 @@ ShortSuccessPrint<public>(Message:string, Code:string, Logic:logic)<transacts>:v
     if:
         Logic?
     then:
-        Print("SUCCESS: {Message} | Code: {Code}", ?Duration:=2.5, ?Color:=NamedColors.Green)
+        Print("SUCCESS: {Message} | Code: {Code}", ?Duration:=5.5, ?Color:=NamedColors.Green)
 
 ShortMessagePrint<public>(Message:string, Code:string, Logic:logic)<transacts>:void=
     if:
         Logic?
     then:
-        Print("NOTICE: {Message} | Code: {Code}", ?Duration:=2.5, ?Color:=NamedColors.Yellow)
+        Print("NOTICE: {Message} | Code: {Code}", ?Duration:=5.5, ?Color:=NamedColors.Yellow)
 
 ShortErrorPrint<public>(Message:string, ErrorCode:string, Logic:logic)<transacts>:void=
     if:
         Logic?
     then:
-        Print("ERROR: {Message} | ErrorCode: {ErrorCode}", ?Duration:=2.5, ?Color:=NamedColors.Red)
+        Print("ERROR: {Message} | ErrorCode: {ErrorCode}", ?Duration:=5.5, ?Color:=NamedColors.Red)
